@@ -11,7 +11,7 @@ artifact_stage:
   cache:
     key: composer
     paths:
-      - .composer
+      - .composer/cache
   script:
     - export USER=$STAGE_USER
     - export HOST=$STAGE_HOST
@@ -49,7 +49,7 @@ artifact_production:
   cache:
     key: composer
     paths:
-      - .composer
+      - .composer/cache
   script:
     - export USER=$LIVE_USER
     - export HOST=$LIVE_HOST
