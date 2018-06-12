@@ -1,0 +1,7 @@
+{
+  "name": "magento/project-deploy",
+  "type": "project",
+  "require": {
+    "deployer/deployer": "6.0.3"
+  }
+}

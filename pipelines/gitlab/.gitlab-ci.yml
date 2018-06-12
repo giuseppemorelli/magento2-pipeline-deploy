@@ -1,0 +1,84 @@
+image: gmdotnet/magento2-deploy
+
+variables:
+  BUCKET_COMMIT: bucket-commit-$CI_COMMIT_SHA.tar.gz
+
+stages:
+  - build
+  - deploy
+
+artifact_stage:
+  cache:
+    key: composer
+    paths:
+      - .composer
+  script:
+    - export USER=$STAGE_USER
+    - export HOST=$STAGE_HOST
+    - export HOST_DEPLOY_PATH=$STAGE_HOST_DEPLOY_PATH
+    - export HOST_DEPLOY_PATH_BUCKET=$STAGE_HOST_DEPLOY_PATH/bucket
+    - export BUCKET_COMMIT=$BUCKET_COMMIT
+    - export SSH_PRIVATE_KEY=$STAGE_SSH_PRIVATE_KEY
+    - export SSH_KEYSCAN=$STAGE_SSH_KEYSCAN
+    - /bin/sh pipelines/bin/set_ssh.sh
+    - /bin/sh pipelines/bin/build.sh
+  stage: build
+  only:
+    - develop
+
+deploy_stage:
+  script:
+    - export USER=$STAGE_USER
+    - export HOST=$STAGE_HOST
+    - export HOST_DEPLOY_PATH=$STAGE_HOST_DEPLOY_PATH
+    - export HOST_DEPLOY_PATH_BUCKET=$STAGE_HOST_DEPLOY_PATH/bucket
+    - export BUCKET_COMMIT=$BUCKET_COMMIT
+    - export ENV=staging
+    - export SSH_PRIVATE_KEY=$STAGE_SSH_PRIVATE_KEY
+    - export SSH_KEYSCAN=$STAGE_SSH_KEYSCAN
+    - /bin/sh pipelines/bin/set_ssh.sh
+    - /bin/sh pipelines/bin/staging/deploy.sh
+  stage: deploy
+  environment:
+      name: staging
+      url: http://magento.staging
+  only:
+    - develop
+
+artifact_production:
+  cache:
+    key: composer
+    paths:
+      - .composer
+  script:
+    - export USER=$LIVE_USER
+    - export HOST=$LIVE_HOST
+    - export HOST_DEPLOY_PATH=$LIVE_HOST_DEPLOY_PATH
+    - export HOST_DEPLOY_PATH_BUCKET=$LIVE_HOST_DEPLOY_PATH/bucket
+    - export BUCKET_COMMIT=$BUCKET_COMMIT
+    - export SSH_PRIVATE_KEY=$LIVE_SSH_PRIVATE_KEY
+    - export SSH_KEYSCAN=$LIVE_SSH_KEYSCAN
+    - /bin/sh pipelines/bin/set_ssh.sh
+    - /bin/sh pipelines/bin/build.sh
+  stage: build
+  only:
+    - master
+
+deploy_production:
+  script:
+    - export USER=$LIVE_USER
+    - export HOST=$LIVE_HOST
+    - export HOST_DEPLOY_PATH=$LIVE_HOST_DEPLOY_PATH
+    - export HOST_DEPLOY_PATH_BUCKET=$LIVE_HOST_DEPLOY_PATH/bucket
+    - export BUCKET_COMMIT=$BUCKET_COMMIT
+    - export ENV=production
+    - export SSH_PRIVATE_KEY=$LIVE_SSH_PRIVATE_KEY
+    - export SSH_KEYSCAN=$LIVE_SSH_KEYSCAN
+    - /bin/sh pipelines/bin/set_ssh.sh
+    - /bin/sh pipelines/bin/production/deploy.sh
+  stage: deploy
+  environment:
+      name: production
+      url: https://magento.production
+  only:
+    - master
