@@ -46,7 +46,6 @@ task(
         run('mkdir temp');
         run('tar xfz {{bucket-commit}} -C temp');
         run('cp -rf temp/htdocs {{release_path}}');
-        run('cp -rf temp/docker {{deploy_path}}');
         run('mv {{bucket-commit}} {{bucket-commit}}.back');
         run('rm temp -rf');
     } catch (\Exception $e) {

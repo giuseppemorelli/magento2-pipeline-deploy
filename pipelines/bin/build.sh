@@ -39,8 +39,6 @@ bin/magento setup:install \
 --key=magento \
 --cleanup-database
 
-git checkout -- dev/tools/grunt/configs/themes.js
-
 bin/magento deploy:mode:set --skip-compilation production
 bin/magento setup:static-content:deploy
 ## if you have problem with languages just use single command for every template like this
