@@ -13,7 +13,7 @@ composer install
 -o write_use_sudo=true
 
 # setup magento
-ssh $USER@$HOST "cd $HOST_DEPLOY_PATH/release/htdocs/ && /bin/sh $HOST_DEPLOY_PATH/pipelines/bin/$ENV/bin/release_setup.sh"
+ssh $USER@$HOST "cd $HOST_DEPLOY_PATH/release/htdocs/ && /bin/sh $HOST_DEPLOY_PATH/pipelines/bin/$ENV/release_setup.sh"
 
 # deploy release
 ./vendor/bin/dep deploy $ENV \
@@ -22,4 +22,4 @@ ssh $USER@$HOST "cd $HOST_DEPLOY_PATH/release/htdocs/ && /bin/sh $HOST_DEPLOY_PA
 -o deploy_path_custom=$HOST_DEPLOY_PATH \
 -o write_use_sudo=true
 
-ssh $USER@$HOST "cd $HOST_DEPLOY_PATH/current/htdocs/ && /bin/sh $HOST_DEPLOY_PATH/pipelines/$ENV/bin/post_release_setup.sh"
+ssh $USER@$HOST "cd $HOST_DEPLOY_PATH/current/htdocs/ && /bin/sh $HOST_DEPLOY_PATH/pipelines/bin/$ENV/post_release_setup.sh"

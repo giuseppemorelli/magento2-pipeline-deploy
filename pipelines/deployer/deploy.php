@@ -16,22 +16,22 @@ set('magento_root', 'htdocs');
 // Configuration
 set(
     'shared_files', [
-    '{{magento_root}}/app/etc/env.php',
-    '{{magento_root}}/var/.maintenance.ip',
-]
+        '{{magento_root}}/app/etc/env.php',
+        '{{magento_root}}/var/.maintenance.ip',
+    ]
 );
 set(
     'shared_dirs', [
-    '{{magento_root}}/pub/media',
-    '{{magento_root}}/blog',
-]
+        '{{magento_root}}/pub/media',
+        '{{magento_root}}/blog',
+    ]
 );
 set(
     'writable_dirs', [
-    '{{magento_root}}/var',
-    '{{magento_root}}/pub/static',
-    '{{magento_root}}/pub/media',
-]
+        '{{magento_root}}/var',
+        '{{magento_root}}/pub/static',
+        '{{magento_root}}/pub/media',
+    ]
 );
 
 // Servers
@@ -46,6 +46,7 @@ task(
         run('mkdir temp');
         run('tar xfz {{bucket-commit}} -C temp');
         run('cp -rf temp/htdocs {{release_path}}');
+        run('cp -rf temp/pipelines {{deploy_path}}');
         run('mv {{bucket-commit}} {{bucket-commit}}.back');
         run('rm temp -rf');
     } catch (\Exception $e) {
@@ -58,12 +59,12 @@ task(
 desc('Deploy bucket');
 task(
     'deploy-bucket', [
-    'deploy:info',
-    'deploy:prepare',
-    'deploy:lock',
-    'deploy:release',
-    'deploy:unpack-bucket'
-]
+        'deploy:info',
+        'deploy:prepare',
+        'deploy:lock',
+        'deploy:release',
+        'deploy:unpack-bucket'
+    ]
 );
 
 desc('Deploy release');

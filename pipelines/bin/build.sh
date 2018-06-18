@@ -2,21 +2,14 @@
 
 set -e
 
-service mysql start
-
 PROJECT_PATH="$(pwd)"
 
-## de-comment and add auth.json for composer if you need
-## mkdir ~/.composer && cp ./pipelines/dataconfig/composer/auth.json ~/.composer/
+mkdir ~/.composer && cp ./pipelines/dataconfig/composer/auth.json ~/.composer/
 
 cd $PROJECT_PATH/htdocs
 
 /usr/local/bin/composer install --no-dev --no-progress
 chmod +x bin/magento
-
-mysql -u root -e "DROP DATABASE IF EXISTS magento"
-mysql -u root -e "CREATE DATABASE IF NOT EXISTS magento"
-mysql -u root -e "FLUSH PRIVILEGES"
 
 bin/magento setup:install \
 --admin-firstname=local \
@@ -26,9 +19,10 @@ bin/magento setup:install \
 --admin-password=local123 \
 --base-url=http://magento.build/ \
 --backend-frontname=admin \
---db-host=localhost \
+--db-host=mysql \
 --db-name=magento \
 --db-user=root \
+--db-password=magento \
 --use-secure=0 \
 --use-rewrites=1 \
 --use-secure-admin=0 \
