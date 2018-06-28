@@ -42,7 +42,7 @@ bin/magento setup:static-content:deploy
 ## bin/magento setup:static-content:deploy en_US -f -s standard -a adminhtml
 
 bin/magento setup:di:compile
-composer dump-autoload --optimize
+composer dump-autoload -o
 
 cd $PROJECT_PATH
 

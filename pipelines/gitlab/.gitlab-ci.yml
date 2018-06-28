@@ -4,8 +4,30 @@ variables:
   MYSQL_DATABASE: magento
 
 stages:
+  - test
   - build
   - deploy
+
+magento_test:
+  image: gmdotnet/magento2-deploy:7.0
+  services:
+    - name: mysql:5.7
+      alias: mysql
+  cache:
+    key: composer
+    paths:
+      - ~/.composer/cache
+  script:
+    - export USER=$STAGE_USER
+    - export HOST=$STAGE_HOST
+    - export HOST_DEPLOY_PATH=$STAGE_HOST_DEPLOY_PATH
+    - export HOST_DEPLOY_PATH_BUCKET=$STAGE_HOST_DEPLOY_PATH/bucket
+    - export BUCKET_COMMIT=$BUCKET_COMMIT
+    - export SSH_PRIVATE_KEY=$STAGE_SSH_PRIVATE_KEY
+    - export SSH_KEYSCAN=$STAGE_SSH_KEYSCAN
+    - /bin/sh pipelines/bin/set_ssh.sh
+    - /bin/sh pipelines/bin/test.sh
+  stage: test
 
 artifact_stage:
   image: gmdotnet/magento2-deploy:7.0
