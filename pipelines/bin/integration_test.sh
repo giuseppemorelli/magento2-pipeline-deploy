@@ -35,12 +35,11 @@ bin/magento setup:install \
 
 bin/magento deploy:mode:set developer
 
-## Unit test
-## ./vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist
-
-## Integration test
-
+echo "**************************"
+echo "START INTEGRATION TESTS"
+echo "**************************"
+## Integration tests
 ### Integration test needs mysql-dump
-#apt-get update && apt-get install -y mysql-server
+apt-get update && apt-get install -y mysql-server
 
-#cd dev/tests/integration && ../../../vendor/bin/phpunit -c phpunit.xml.mp
+cd dev/tests/integration && ../../../vendor/bin/phpunit -c phpunit.xml.dist

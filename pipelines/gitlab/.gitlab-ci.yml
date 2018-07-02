@@ -1,35 +1,78 @@
+image: gmdotnet/php-deploy:7.0
+
 variables:
   BUCKET_COMMIT: bucket-commit-$CI_COMMIT_SHA.tar.gz
   MYSQL_ROOT_PASSWORD: magento
   MYSQL_DATABASE: magento
 
+cache:
+  key: composer
+  paths:
+    - ~/.composer/cach
+
 stages:
   - test
+  - static test
   - build
   - deploy
 
-magento_test:
+magento:unit_test:
+  image: gmdotnet/magento2-deploy:7.0
+  services:
+    - name: mysql:5.7
+      alias: mysqle
+  script:
+    - export SSH_PRIVATE_KEY=$STAGE_SSH_PRIVATE_KEY
+    - export SSH_KEYSCAN=$STAGE_SSH_KEYSCAN
+    - /bin/sh pipelines/bin/set_ssh.sh
+    - /bin/sh pipelines/bin/unit_test.sh
+  stage: test
+  allow_failure: true
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - ./
+    expire_in: 1 week
+    when: on_success
+
+magento:static_test:
   image: gmdotnet/magento2-deploy:7.0
   services:
     - name: mysql:5.7
       alias: mysql
-  cache:
-    key: composer
-    paths:
-      - ~/.composer/cache
   script:
-    - export USER=$STAGE_USER
-    - export HOST=$STAGE_HOST
-    - export HOST_DEPLOY_PATH=$STAGE_HOST_DEPLOY_PATH
-    - export HOST_DEPLOY_PATH_BUCKET=$STAGE_HOST_DEPLOY_PATH/bucket
-    - export BUCKET_COMMIT=$BUCKET_COMMIT
     - export SSH_PRIVATE_KEY=$STAGE_SSH_PRIVATE_KEY
     - export SSH_KEYSCAN=$STAGE_SSH_KEYSCAN
     - /bin/sh pipelines/bin/set_ssh.sh
-    - /bin/sh pipelines/bin/test.sh
-  stage: test
+    - /bin/sh pipelines/bin/static_test.sh
+  stage: static test
+  allow_failure: true
+  dependencies:
+    - magento:unit_test
 
-artifact_stage:
+#
+# TODO:
+# integration test cannot be run inside a pipeline
+# we need to run in a stage server
+#
+#magento:integration_test:
+#  image: gmdotnet/magento2-deploy:7.0
+#  services:
+#    - name: mysql:5.7
+#      alias: mysql
+#  cache:
+#    key: composer
+#    paths:
+#      - ~/.composer/cache
+#  script:
+#    - export SSH_PRIVATE_KEY=$STAGE_SSH_PRIVATE_KEY
+#    - export SSH_KEYSCAN=$STAGE_SSH_KEYSCAN
+#    - /bin/sh pipelines/bin/set_ssh.sh
+#    - /bin/sh pipelines/bin/unit_test.sh
+#  stage: test
+#  allow_failure: true
+
+build:stage:
   image: gmdotnet/magento2-deploy:7.0
   services:
     - name: mysql:5.7
@@ -52,7 +95,7 @@ artifact_stage:
   only:
     - develop
 
-deploy_stage:
+deploy:stage:
   script:
     - export USER=$STAGE_USER
     - export HOST=$STAGE_HOST
@@ -71,7 +114,7 @@ deploy_stage:
   only:
     - develop
 
-artifact_production:
+build:production:
   image: gmdotnet/magento2-deploy:7.0
   services:
     - name: mysql:5.7
@@ -93,8 +136,9 @@ artifact_production:
   stage: build
   only:
     - master
+  when: on_success
 
-deploy_production:
+deploy:production:
   script:
     - export USER=$LIVE_USER
     - export HOST=$LIVE_HOST
@@ -112,3 +156,4 @@ deploy_production:
       url: https://magento.production
   only:
     - master
+  when: on_success
