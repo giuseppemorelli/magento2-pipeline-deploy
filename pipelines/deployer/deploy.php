@@ -23,7 +23,6 @@ set(
 set(
     'shared_dirs', [
         '{{magento_root}}/pub/media',
-        '{{magento_root}}/blog',
     ]
 );
 set(

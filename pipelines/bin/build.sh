@@ -44,6 +44,8 @@ bin/magento setup:static-content:deploy
 bin/magento setup:di:compile
 composer dump-autoload -o
 
+echo "Create artifact and send to server"
+
 cd $PROJECT_PATH
 
 tar cfz "$BUCKET_COMMIT" pipelines/bin/$ENV htdocs
