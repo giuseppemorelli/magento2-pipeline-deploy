@@ -27,13 +27,6 @@ magento:unit_test:
     - /bin/sh pipelines/bin/set_ssh.sh
     - /bin/sh pipelines/bin/unit_test.sh
   stage: test
-  allow_failure: true
-  artifacts:
-    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-    paths:
-      - ./
-    expire_in: 1 week
-    when: on_success
 
 magento:static_test:
   image: gmdotnet/magento2-deploy:7.0
@@ -77,10 +70,6 @@ build:stage:
   services:
     - name: mysql:5.7
       alias: mysql
-  cache:
-    key: composer
-    paths:
-      - ~/.composer/cache
   script:
     - export USER=$STAGE_USER
     - export HOST=$STAGE_HOST
@@ -119,10 +108,6 @@ build:production:
   services:
     - name: mysql:5.7
       alias: mysql
-  cache:
-    key: composer
-    paths:
-      - ~/.composer/cache
   script:
     - export USER=$LIVE_USER
     - export HOST=$LIVE_HOST
@@ -136,7 +121,6 @@ build:production:
   stage: build
   only:
     - master
-  when: on_success
 
 deploy:production:
   script:
@@ -156,4 +140,3 @@ deploy:production:
       url: https://magento.production
   only:
     - master
-  when: on_success
