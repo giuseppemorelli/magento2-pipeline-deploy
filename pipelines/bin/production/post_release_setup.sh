@@ -4,7 +4,7 @@
 cd /var/www/htdocs
 
 echo "Import magento config"
-php bin/magento app:config:import
+php bin/magento app:config:import --no-interaction
 
 echo "Check setup:upgrade status"
 # use --no-ansi to avoid color characters
